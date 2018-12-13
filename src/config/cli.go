@@ -26,7 +26,7 @@ func NewCliConfig() Config {
 	)
 
 	flag.StringVar(&words, "words", "file", "Words Type")
-	flag.StringVar(&file, "file", "word/words.txt", "Words file")
+	flag.StringVar(&file, "file", "words/words.txt", "Words file")
 	flag.StringVar(&model, "model", "memory", "Model type")
 	flag.StringVar(&view, "view", "rest", "View type")
 	flag.StringVar(&ip, "ip", "0.0.0.0", "Listening ip")

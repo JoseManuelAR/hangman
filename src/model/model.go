@@ -2,12 +2,13 @@ package model
 
 import (
 	"config"
-	"errors"
 	"data"
+	"errors"
+	"sync"
 )
 
 type Model interface {
-	Run() error
+	Run(wg sync.WaitGroup) error
 	CreateGame(word string) data.Game
 	UpdateGame(id string, game data.Game) error
 	GetGame(id string) (data.Game, error)

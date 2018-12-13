@@ -8,7 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
+	"makeguess"
 	"net/http"
+	"newgame"
 	"os"
 	"sync"
 )
@@ -20,8 +22,12 @@ func commonMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (server restServer) newGame(w http.ResponseWriter, r *http.Request) {
-	gameInfo, err := server.controller.NewGame()
+func (server restServer) doNewGame(w http.ResponseWriter, r *http.Request) {
+	if server.newGame == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	gameInfo, err := server.newGame.Execute()
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -42,7 +48,7 @@ type userGuess struct {
 	Guess string
 }
 
-func (server restServer) newGuess(w http.ResponseWriter, r *http.Request) {
+func (server restServer) doNewGuess(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -55,7 +61,7 @@ func (server restServer) newGuess(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	gameInfo, err := server.controller.NewGuess(params["id"], guess.Guess)
+	gameInfo, err := server.makeGuess.Execute(params["id"], guess.Guess)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -66,18 +72,21 @@ func (server restServer) newGuess(w http.ResponseWriter, r *http.Request) {
 }
 
 type restServer struct {
+	newGame    newgame.NewGame
+	makeGuess  makeguess.MakeGuess
 	controller controller.Controller
 	ip         string
 	port       string
 	router     *mux.Router
 }
 
-func NewRestServer(config config.Config, controller controller.Controller) View {
+func NewRestServer(config config.Config, newGame newgame.NewGame, makeGuess makeguess.MakeGuess) View {
 	return &restServer{
-		controller: controller,
-		ip:         config.Ip(),
-		port:       config.Port(),
-		router:     mux.NewRouter()}
+		newGame:   newGame,
+		makeGuess: makeGuess,
+		ip:        config.Ip(),
+		port:      config.Port(),
+		router:    mux.NewRouter()}
 }
 
 func (server restServer) Run(wg sync.WaitGroup) error {
@@ -85,8 +94,8 @@ func (server restServer) Run(wg sync.WaitGroup) error {
 
 	server.router.Use(commonMiddleware)
 	server.router.HandleFunc("/games", server.getGamesInfo).Methods("GET")
-	server.router.HandleFunc("/games", server.newGame).Methods("POST")
-	server.router.HandleFunc("/games/{id}/guesses", server.newGuess).Methods("PUT")
+	server.router.HandleFunc("/games", server.doNewGame).Methods("POST")
+	server.router.HandleFunc("/games/{id}/guesses", server.doNewGuess).Methods("PUT")
 	loggedRouter := handlers.LoggingHandler(os.Stdout, server.router)
 	http.ListenAndServe(server.ip+":"+server.port, loggedRouter)
 	return nil
