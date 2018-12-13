@@ -12,70 +12,44 @@ import (
 
 type Hangman struct {
 	view       view.View
-	model      model.Model
 	controller controller.Controller
 }
 
-func createModel(name string) model.Model {
-	switch name {
-	case "memory":
-		return model.NewMemoryModel()
+func createModel(config config.Config) model.Model {
+	model, err := model.Create(config)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return nil
+	return model
 }
 
-func createWords(name string, file string) word.Words {
-	switch name {
-	case "file":
-		return word.NewFileWord(file)
+func createWord(config config.Config) word.Words {
+	word, err := word.Create(config)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return nil
-}
-
-func createController(name string, model model.Model, words word.Words) controller.Controller {
-	switch name {
-	case "production":
-		return controller.NewProductionController(model, words)
-	}
-	return nil
-}
-
-func createView(name string, ip string, port string, controller controller.Controller) view.View {
-	switch name {
-	case "rest":
-		return view.NewRestServer(controller, view.RestConfig{ip, port})
-	}
-	return nil
+	return word
 }
 
 func NewHangman(config config.Config) Hangman {
-	model := createModel(config.ModelType)
-	if model == nil {
-		log.Fatal("Error creating model. Exiting program")
+	controller, err := controller.Create(config, createModel(config), createWord(config))
+	if err != nil {
+		log.Fatal(err)
 	}
-	words := createWords(config.WordsType, config.WordsFile)
-	if words == nil {
-		log.Fatal("Error creating words generator. Exiting program")
-	}
-	controller := createController(config.ControllerType, model, words)
-	if controller == nil {
-		log.Fatal("Error creating contoller. Exiting program")
-	}
-	view := createView(config.ViewType, config.Ip, config.Port, controller)
-	if view == nil {
-		log.Fatal("Error creating view. Exiting program")
+	view, err := view.Create(config, controller)
+	if err != nil {
+		log.Fatal(err)
 	}
 	return Hangman{view: view,
-		model: model}
+		controller: controller}
 }
 
-func (hangman Hangman) Start() error {
+func (hangman Hangman) Run() error {
 	log.Println("Starting hangman...")
-
 	var wg sync.WaitGroup
 	wg.Add(2)
-	go hangman.model.Start(wg)
-	go hangman.view.Start(wg)
+	go hangman.controller.Run(wg)
+	go hangman.view.Run(wg)
 	wg.Wait()
 	return nil
 }

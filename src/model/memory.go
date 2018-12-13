@@ -1,43 +1,49 @@
 package model
 
 import (
-	"errors"
+	uuid "github.com/google/uuid"
 	"log"
-	"sync"
+	"data"
+	"error"
 )
 
 type memoryModel struct {
-	games map[string]Game
+	games map[string]data.Game
 }
 
 func NewMemoryModel() Model {
-	return memoryModel{games: make(map[string]Game)}
+	return memoryModel{games: make(map[string]data.Game)}
 }
 
-func (model memoryModel) Start(wg sync.WaitGroup) error {
+func (model memoryModel) Run() error {
 	log.Println("Starting memory model...")
 	//words := readWordsFromFile(model.words_file)
 	return nil
 }
 
-func (model memoryModel) CreateGame(word string) Game {
-	game := newGame(word)
-	model.games[game.Id] = game
-	return model.games[game.Id]
+func (model memoryModel) CreateGame(word string) data.Game {
+	id := uuid.New().String()
+	model.games[id] = data.NewGame(id, word)
+	return model.games[id]
 }
 
-func (model memoryModel) GetGame(id string) (*Game, error) {
+func (model memoryModel) UpdateGame(id string, game data.Game) error {
+	model.games[id] = game
+	return nil
+}
+
+func (model memoryModel) GetGame(id string) (data.Game, error) {
 	game, ok := model.games[id]
 	if !ok {
-		return nil, errors.New("game " + id + " not found")
+		return data.Game{}, errors.ErrGameNotFound
 	}
-	return &game, nil
+	return game, nil
 }
 
-func (model memoryModel) GetGamesInfo() []GameInfo {
-	gamesInfo := make([]GameInfo, 0, len(model.games))
+func (model memoryModel) GetGamesInfo() []data.GameInfo {
+	gamesInfo := make([]data.GameInfo, 0, len(model.games))
 	for _, game := range model.games {
-		gamesInfo = append(gamesInfo, newGameInfo(game))
+		gamesInfo = append(gamesInfo, data.NewGameInfo(game))
 	}
 	return gamesInfo
 }
