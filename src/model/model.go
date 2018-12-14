@@ -3,7 +3,7 @@ package model
 import (
 	"config"
 	"data"
-	"errors"
+	"errs"
 	"sync"
 )
 
@@ -15,12 +15,10 @@ type Model interface {
 	GetGamesInfo() []data.GameInfo
 }
 
-var ErrModelTypeNotSupported = errors.New("Model type not supported")
-
 func Create(config config.Config) (Model, error) {
 	switch config.ModelType() {
 	case "memory":
 		return NewMemoryModel(), nil
 	}
-	return nil, ErrModelTypeNotSupported
+	return nil, errs.ErrModelTypeNotSupported
 }

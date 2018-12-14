@@ -30,8 +30,6 @@ func NewRestServer(config config.Config, controller controller.Controller) View 
 
 func (server restServer) Run(wg sync.WaitGroup) error {
 	log.Println("Starting rest server...")
-
-	server.router.Use(commonMiddleware)
 	server.router.HandleFunc("/games", server.doGetGames).Methods("GET")
 	server.router.HandleFunc("/games", server.doNewGame).Methods("POST")
 	server.router.HandleFunc("/games/{id}/guesses", server.doNewGuess).Methods("PUT")
@@ -41,13 +39,6 @@ func (server restServer) Run(wg sync.WaitGroup) error {
 	return nil
 }
 
-func commonMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		next.ServeHTTP(w, r)
-	})
-}
-
 func (server restServer) doNewGame(w http.ResponseWriter, r *http.Request) {
 	gameInfo, err := server.controller.NewGame()
 	if err != nil {
@@ -55,6 +46,7 @@ func (server restServer) doNewGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	gameInfoJson, _ := json.Marshal(gameInfo)
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(gameInfoJson)
 }
@@ -66,6 +58,7 @@ func (server restServer) doGetGames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	gamesJson, _ := json.Marshal(gamesInfo)
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(gamesJson)
 }
@@ -78,21 +71,28 @@ func (server restServer) doNewGuess(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		w.Header().Add("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	var guess userGuess
 	err = json.Unmarshal(body, &guess)
 	if err != nil {
+		w.Header().Add("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	gameInfo, err := server.controller.NewGuess(params["id"], guess.Guess)
 	if err != nil {
+		w.Header().Add("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	gameInfoJson, _ := json.Marshal(gameInfo)
+	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(gameInfoJson)
 }

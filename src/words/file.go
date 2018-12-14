@@ -14,7 +14,6 @@ type fileWords struct {
 
 func NewFileWord(filePath string) Words {
 	words := readWordsFromFile(filePath)
-	log.Println("Number of words:", len(words))
 	return fileWords{words: words}
 }
 
@@ -29,11 +28,11 @@ func getSystemRandomInt(i int) int {
 }
 
 func readWordsFromFile(filePath string) []string {
-	b, err := ioutil.ReadFile(filePath)
+	bytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	str := string(b)
+	str := string(bytes)
 	words := strings.Split(str, "\n")
 	return words
 }

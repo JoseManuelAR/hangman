@@ -12,7 +12,6 @@ import (
 
 type Hangman struct {
 	model model.Model
-	words words.Words
 	view  view.View
 }
 
@@ -24,7 +23,6 @@ func NewHangman(config config.Config) Hangman {
 
 	return Hangman{
 		model: model,
-		words: words,
 		view:  view}
 }
 

@@ -3,11 +3,9 @@ package view
 import (
 	"config"
 	"controller"
-	"errors"
+	"errs"
 	"sync"
 )
-
-var ErrViewTypeNotSupported = errors.New("View type not supported")
 
 type View interface {
 	Run(wg sync.WaitGroup) error
@@ -18,5 +16,5 @@ func Create(config config.Config, controller controller.Controller) (View, error
 	case "rest":
 		return NewRestServer(config, controller), nil
 	}
-	return nil, ErrViewTypeNotSupported
+	return nil, errs.ErrViewTypeNotSupported
 }

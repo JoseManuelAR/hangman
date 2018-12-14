@@ -49,6 +49,17 @@ func TestHasNotWon(t *testing.T) {
 	}
 }
 
+func TestGuessWithEmptyGuess(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	_, err := NewGuess(nil, "XXXX", "")
+
+	if err != errs.ErrEmptyGuess {
+		t.Fail()
+	}
+}
+
 func TestGuessToNonExistentGame(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()

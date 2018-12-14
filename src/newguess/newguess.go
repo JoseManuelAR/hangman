@@ -2,10 +2,14 @@ package newguess
 
 import (
 	"data"
+	"errs"
 	"model"
 )
 
 func NewGuess(model model.Model, gameId string, guess string) (data.GameInfo, error) {
+	if len(guess) == 0 {
+		return data.GameInfo{}, errs.ErrEmptyGuess
+	}
 	game, err := model.GetGame(gameId)
 	if err != nil {
 		return data.GameInfo{}, err
