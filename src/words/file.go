@@ -29,11 +29,11 @@ func getSystemRandomInt(i int) int {
 }
 
 func readWordsFromFile(filePath string) []string {
-	b, err := ioutil.ReadFile(filePath) // read words from file
+	b, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	str := string(b) // convert content to a 'string'
+	str := string(b)
 	words := strings.Split(str, "\n")
 	return words
 }

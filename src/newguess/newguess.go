@@ -1,22 +1,12 @@
-package makeguess
+package newguess
 
 import (
-	"config"
 	"data"
-	"err"
 	"model"
 )
 
-type MakeGuess interface {
-	Execute(gameId string, guess string) (data.GameInfo, error)
-}
-
-type productionMakeGuess struct {
-	model model.Model
-}
-
-func (makeGuess productionMakeGuess) Execute(gameId string, guess string) (data.GameInfo, error) {
-	game, err := makeGuess.model.GetGame(gameId)
+func NewGuess(model model.Model, gameId string, guess string) (data.GameInfo, error) {
+	game, err := model.GetGame(gameId)
 	if err != nil {
 		return data.GameInfo{}, err
 	}
@@ -39,16 +29,8 @@ func (makeGuess productionMakeGuess) Execute(gameId string, guess string) (data.
 			game.Status = data.Lost
 		}
 	}
-	err = makeGuess.model.UpdateGame(gameId, game)
+	err = model.UpdateGame(gameId, game)
 	return data.NewGameInfo(game), err
-}
-
-func Create(config config.Config, model model.Model) (MakeGuess, error) {
-	switch config.ControllerType() {
-	case "production":
-		return &productionMakeGuess{model: model}, nil
-	}
-	return nil, err.ErrControllerTypeNotSupported
 }
 
 func letterInWord(guess string, letters []string) bool {

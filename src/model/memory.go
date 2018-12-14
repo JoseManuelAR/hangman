@@ -2,7 +2,7 @@ package model
 
 import (
 	"data"
-	"err"
+	"errs"
 	uuid "github.com/google/uuid"
 	"log"
 	"sync"
@@ -18,7 +18,7 @@ func NewMemoryModel() Model {
 
 func (model memoryModel) Run(wg sync.WaitGroup) error {
 	log.Println("Starting memory model...")
-	//words := readWordsFromFile(model.words_file)
+	wg.Done()
 	return nil
 }
 
@@ -36,7 +36,7 @@ func (model memoryModel) UpdateGame(id string, game data.Game) error {
 func (model memoryModel) GetGame(id string) (data.Game, error) {
 	game, ok := model.games[id]
 	if !ok {
-		return data.Game{}, err.ErrGameNotFound
+		return data.Game{}, errs.ErrGameNotFound
 	}
 	return game, nil
 }

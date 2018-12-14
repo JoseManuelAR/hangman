@@ -7,5 +7,4 @@ type Config interface {
 	ViewType() string
 	Ip() string
 	Port() string
-	ControllerType() string
 }

@@ -2,21 +2,40 @@ package hangman
 
 import (
 	"config"
+	"controller"
 	"log"
-	"makeguess"
 	"model"
-	"newgame"
 	"sync"
 	"view"
 	"words"
 )
 
 type Hangman struct {
-	model     model.Model
-	words     words.Words
-	newGame   newgame.NewGame
-	makeGuess makeguess.MakeGuess
-	view      view.View
+	model model.Model
+	words words.Words
+	view  view.View
+}
+
+func NewHangman(config config.Config) Hangman {
+	model := createModel(config)
+	words := createWords(config)
+	controller := createController(model, words)
+	view := createView(config, controller)
+
+	return Hangman{
+		model: model,
+		words: words,
+		view:  view}
+}
+
+func (hangman Hangman) Run() error {
+	log.Println("Starting hangman...")
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go hangman.model.Run(wg)
+	go hangman.view.Run(wg)
+	wg.Wait()
+	return nil
 }
 
 func createModel(config config.Config) model.Model {
@@ -35,51 +54,18 @@ func createWords(config config.Config) words.Words {
 	return word
 }
 
-func createNewGame(config config.Config, model model.Model, words words.Words) newgame.NewGame {
-	newGame, err := newgame.Create(config, model, words)
+func createController(model model.Model, words words.Words) controller.Controller {
+	controller, err := controller.Create(model, words)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return newGame
+	return controller
 }
 
-func createMakeGuess(config config.Config, model model.Model) makeguess.MakeGuess {
-	makeGuess, err := makeguess.Create(config, model)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return makeGuess
-}
-
-func createView(config config.Config, newGame newgame.NewGame, makeGuess makeguess.MakeGuess) view.View {
-	view, err := view.Create(config, newGame, makeGuess)
+func createView(config config.Config, controller controller.Controller) view.View {
+	view, err := view.Create(config, controller)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return view
-}
-
-func NewHangman(config config.Config) Hangman {
-	model := createModel(config)
-	words := createWords(config)
-	newGame := createNewGame(config, model, words)
-	makeGuess := createMakeGuess(config, model)
-	view := createView(config, newGame, makeGuess)
-
-	return Hangman{
-		model:     model,
-		words:     words,
-		newGame:   newGame,
-		makeGuess: makeGuess,
-		view:      view}
-}
-
-func (hangman Hangman) Run() error {
-	log.Println("Starting hangman...")
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go hangman.model.Run(wg)
-	go hangman.view.Run(wg)
-	wg.Wait()
-	return nil
 }

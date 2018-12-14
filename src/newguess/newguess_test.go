@@ -1,8 +1,8 @@
-package controller
+package newguess
 
 import (
 	"data"
-	"error"
+	"errs"
 	gomock "github.com/golang/mock/gomock"
 	"mocks"
 	"testing"
@@ -26,18 +26,38 @@ func TestNotLetterInWord(t *testing.T) {
 	}
 }
 
+func TestHasWon(t *testing.T) {
+	letters := []string{"t", "e", "s", "t"}
+	used := make(map[string]bool)
+	used["t"] = true
+	used["e"] = true
+	used["s"] = true
+	won := hasWon(letters, used)
+	if !won {
+		t.Errorf("Game should be won")
+	}
+}
+
+func TestHasNotWon(t *testing.T) {
+	letters := []string{"t", "e", "s", "t"}
+	used := make(map[string]bool)
+	used["t"] = true
+	used["s"] = true
+	won := hasWon(letters, used)
+	if won {
+		t.Errorf("Game should not be won")
+	}
+}
+
 func TestGuessToNonExistentGame(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{}, errs.ErrGameNotFound)
+	_, err := NewGuess(model, "XXXX", "a")
 
-	model.EXPECT().GetGame("XXXX").Return(data.Game{}, errors.ErrGameNotFound)
-	c := NewProductionController(model, words)
-	_, err := c.NewGuess("XXXX", "a")
-
-	if err != errors.ErrGameNotFound {
+	if err != errs.ErrGameNotFound {
 		t.Fail()
 	}
 }
@@ -47,11 +67,8 @@ func TestGuessToLostGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.Lost}, nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "a")
+	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
@@ -66,11 +83,8 @@ func TestGuessToWonGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.Won}, nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "a")
+	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
@@ -85,14 +99,11 @@ func TestGuessAlreadyGuessed(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	used := make(map[string]bool)
 	used["a"] = true
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.BadGuess, Used: used}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "a")
+	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
@@ -107,12 +118,9 @@ func TestGuessBadGuess(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuess}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "a")
+	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
@@ -127,12 +135,9 @@ func TestGuessGoodGuess(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuess}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "e")
+	game, err := NewGuess(model, "XXXX", "e")
 
 	if err != nil {
 		t.Fail()
@@ -147,15 +152,12 @@ func TestGuessAndLoseGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	used := make(map[string]bool)
 	used["t"] = true
 	used["s"] = true
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuess, TurnsLeft: 1}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "x")
+	game, err := NewGuess(model, "XXXX", "x")
 
 	if err != nil {
 		t.Fail()
@@ -170,15 +172,12 @@ func TestGuessAndWinGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	words := mocks.NewMockWords(mockCtrl)
-
 	used := make(map[string]bool)
 	used["t"] = true
 	used["s"] = true
 	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuess, TurnsLeft: 1}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
-	c := NewProductionController(model, words)
-	game, err := c.NewGuess("XXXX", "e")
+	game, err := NewGuess(model, "XXXX", "e")
 
 	if err != nil {
 		t.Fail()

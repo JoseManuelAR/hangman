@@ -1,20 +1,33 @@
 package controller
 
 import (
-	"config"
 	"data"
-	"err"
+	"getgames"
+	"model"
+	"newgame"
+	"newguess"
+	"words"
 )
 
-type Controller interface {
-	GetGamesInfo() []data.GameInfo
-	//NewGuess(gameId string, guess string) (data.GameInfo, error)
+type Controller struct {
+	model model.Model
+	words words.Words
 }
 
-func Create(config config.Config) (Controller, error) {
-	// switch config.ControllerType() {
-	// case "production":
-	// 	return NewProductionController(model, words), nil
-	// }
-	return nil, err.ErrControllerTypeNotSupported
+func (controller Controller) NewGame() (data.GameInfo, error) {
+	return newgame.NewGame(controller.model, controller.words)
+}
+
+func (controller Controller) GetGames() ([]data.GameInfo, error) {
+	return getgames.GetGames(controller.model)
+}
+
+func (controller Controller) NewGuess(gameId string, guess string) (data.GameInfo, error) {
+	return newguess.NewGuess(controller.model, gameId, guess)
+}
+
+func Create(model model.Model, words words.Words) (Controller, error) {
+	return Controller{
+		model: model,
+		words: words}, nil
 }
