@@ -40,5 +40,6 @@ go tool cover -html=newguess.out -o newguess.html
 
 # build
 
-go build -o bin/server main
+go build server
+go build client
 

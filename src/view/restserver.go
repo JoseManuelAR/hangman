@@ -1,16 +1,17 @@
 package view
 
 import (
-	"config"
+	config "config/server"
 	"controller"
 	"encoding/json"
-	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"sync"
+
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 type restServer struct {

@@ -1,7 +1,7 @@
 package words
 
 import (
-	"config"
+	config "config/server"
 	"errs"
 )
 

@@ -1,7 +1,7 @@
 package hangman
 
 import (
-	"config"
+	config "config/server"
 	"controller"
 	"log"
 	"model"

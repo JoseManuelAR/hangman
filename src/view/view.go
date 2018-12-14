@@ -1,7 +1,7 @@
 package view
 
 import (
-	"config"
+	config "config/server"
 	"controller"
 	"errs"
 	"sync"

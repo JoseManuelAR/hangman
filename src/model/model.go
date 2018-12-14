@@ -1,7 +1,7 @@
 package model
 
 import (
-	"config"
+	config "config/server"
 	"data"
 	"errs"
 	"sync"
