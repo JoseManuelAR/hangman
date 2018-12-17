@@ -85,7 +85,7 @@ func TestGuessToLostGame(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Lost.String() {
+	if game.Status != data.Lost {
 		t.Fail()
 	}
 }
@@ -101,7 +101,7 @@ func TestGuessToWonGame(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Won.String() {
+	if game.Status != data.Won {
 		t.Fail()
 	}
 }
@@ -120,7 +120,7 @@ func TestGuessAlreadyGuessed(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.AlreadyGuessed.String() {
+	if game.Status != data.AlreadyGuessed {
 		t.Fail()
 	}
 }
@@ -137,7 +137,7 @@ func TestGuessBadGuess(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.BadGuess.String() {
+	if game.Status != data.BadGuess {
 		t.Fail()
 	}
 }
@@ -154,7 +154,7 @@ func TestGuessGoodGuess(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.GoodGuess.String() {
+	if game.Status != data.GoodGuess {
 		t.Fail()
 	}
 }
@@ -174,7 +174,7 @@ func TestGuessAndLoseGame(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Lost.String() {
+	if game.Status != data.Lost {
 		t.Fail()
 	}
 }
@@ -194,7 +194,7 @@ func TestGuessAndWinGame(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Won.String() {
+	if game.Status != data.Won {
 		t.Fail()
 	}
 }
