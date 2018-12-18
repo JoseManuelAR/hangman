@@ -83,8 +83,8 @@ func (view cliView) gameView(gameId string) {
 	view.listHeaderView()
 	view.listGameView(gameInfo)
 	view.writer.Flush()
-	for gameInfo.Status != data.Lost && gameInfo.Status != data.Won {
-		fmt.Println("Guess a letter for the word:")
+	for gameInfo.Status != data.GameLost && gameInfo.Status != data.GameWon {
+		fmt.Println("Guess a letter for the word [.x to return to main menu]:")
 		guess, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil {
 			log.Fatal(err)
@@ -116,16 +116,9 @@ func (view cliView) listGamesView() {
 }
 
 func (view cliView) listHeaderView() {
-	fmt.Fprintln(view.writer, "Game Id"+"\t"+"Status"+"\t"+"Word"+"\t")
+	fmt.Fprintln(view.writer, "Game Id"+"\t"+"Status"+"\t"+"Word"+"\t"+"Turns left"+"\t")
 }
 
 func (view cliView) listGameView(gameInfo data.GameInfo) {
-	var status string
-	switch {
-	case gameInfo.Status == "Initial" || gameInfo.Status == "GoodGuess" || gameInfo.Status == "BadGuess" || gameInfo.Status == "AlreadyGuessed":
-		status = "Playing"
-	default:
-		status = gameInfo.Status
-	}
-	fmt.Fprintln(view.writer, gameInfo.Id+"\t"+status+"\t"+gameInfo.RevealedWord+"\t")
+	fmt.Fprintln(view.writer, gameInfo.Id+"\t"+gameInfo.Status+"\t"+gameInfo.RevealedWord+"\t"+gameInfo.TurnsLeft+"\t")
 }

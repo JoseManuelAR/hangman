@@ -18,6 +18,6 @@ func NewGame(id string, word string) Game {
 		Id:        id,
 		Letters:   letters,
 		Used:      make(map[string]bool),
-		Status:    InitialCode,
+		Status:    Initial,
 		TurnsLeft: 5}
 }

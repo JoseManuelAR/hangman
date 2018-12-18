@@ -4,7 +4,7 @@ go version go1.11 linux/amd64
 
 # tests & coverage
 
-go test -v newguess -coverprofile=newguess.out
+go test -v server/controller/newguess -coverprofile=newguess.out
 
 === RUN   TestLetterInWord
 --- PASS: TestLetterInWord (0.00s)
@@ -34,12 +34,11 @@ go test -v newguess -coverprofile=newguess.out
 --- PASS: TestGuessAndWinGame (0.00s)
 PASS
 coverage: 100.0% of statements
-ok  	newguess	0.003s	coverage: 100.0% of statements
+ok  	server/controller/newguess	0.003s	coverage: 100.0% of statements
 
 go tool cover -html=newguess.out -o newguess.html
 
 # build
 
-go build server
-go build client
-
+go build -o bin/client client/main
+go build -o bin/server server/main

@@ -14,23 +14,23 @@ func NewGuess(model model.Model, gameId string, guess string) (data.GameInfo, er
 	if err != nil {
 		return data.GameInfo{}, err
 	}
-	if game.Status == data.LostCode || game.Status == data.WonCode {
+	if game.Status == data.Lost || game.Status == data.Won {
 		return data.NewGameInfo(game), nil
 	}
 	if game.Used[guess] {
-		game.Status = data.AlreadyGuessedCode
+		game.Status = data.AlreadyGuessed
 	} else if letterInWord(guess, game.Letters) {
 		game.Used[guess] = true
-		game.Status = data.GoodGuessCode
+		game.Status = data.GoodGuess
 		if hasWon(game.Letters, game.Used) {
-			game.Status = data.WonCode
+			game.Status = data.Won
 		}
 	} else {
 		game.TurnsLeft--
-		game.Status = data.BadGuessCode
+		game.Status = data.BadGuess
 		game.Used[guess] = true
 		if game.TurnsLeft == 0 {
-			game.Status = data.LostCode
+			game.Status = data.Lost
 		}
 	}
 	err = model.UpdateGame(gameId, game)

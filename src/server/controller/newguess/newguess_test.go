@@ -79,13 +79,13 @@ func TestGuessToLostGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.LostCode}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.Lost}, nil)
 	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Lost {
+	if game.Status != data.GameLost {
 		t.Fail()
 	}
 }
@@ -95,13 +95,13 @@ func TestGuessToWonGame(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.WonCode}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.Won}, nil)
 	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Won {
+	if game.Status != data.GameWon {
 		t.Fail()
 	}
 }
@@ -113,14 +113,14 @@ func TestGuessAlreadyGuessed(t *testing.T) {
 	model := mocks.NewMockModel(mockCtrl)
 	used := make(map[string]bool)
 	used["a"] = true
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.BadGuessCode, Used: used}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Status: data.BadGuess, Used: used}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
 	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.AlreadyGuessed {
+	if game.Status != data.GamePlaying {
 		t.Fail()
 	}
 }
@@ -130,14 +130,14 @@ func TestGuessBadGuess(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuessCode}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuess}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
 	game, err := NewGuess(model, "XXXX", "a")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.BadGuess {
+	if game.Status != data.GamePlaying {
 		t.Fail()
 	}
 }
@@ -147,14 +147,14 @@ func TestGuessGoodGuess(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	model := mocks.NewMockModel(mockCtrl)
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuessCode}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: make(map[string]bool), Status: data.BadGuess}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
 	game, err := NewGuess(model, "XXXX", "e")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.GoodGuess {
+	if game.Status != data.GamePlaying {
 		t.Fail()
 	}
 }
@@ -167,14 +167,14 @@ func TestGuessAndLoseGame(t *testing.T) {
 	used := make(map[string]bool)
 	used["t"] = true
 	used["s"] = true
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuessCode, TurnsLeft: 1}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuess, TurnsLeft: 1}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
 	game, err := NewGuess(model, "XXXX", "x")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Lost {
+	if game.Status != data.GameLost {
 		t.Fail()
 	}
 }
@@ -187,14 +187,14 @@ func TestGuessAndWinGame(t *testing.T) {
 	used := make(map[string]bool)
 	used["t"] = true
 	used["s"] = true
-	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuessCode, TurnsLeft: 1}, nil)
+	model.EXPECT().GetGame("XXXX").Return(data.Game{Letters: []string{"t", "e", "s", "t"}, Used: used, Status: data.BadGuess, TurnsLeft: 1}, nil)
 	model.EXPECT().UpdateGame("XXXX", gomock.Any()).Return(nil)
 	game, err := NewGuess(model, "XXXX", "e")
 
 	if err != nil {
 		t.Fail()
 	}
-	if game.Status != data.Won {
+	if game.Status != data.GameWon {
 		t.Fail()
 	}
 }
