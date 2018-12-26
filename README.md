@@ -64,8 +64,8 @@ go test -v server/controller/newguess -coverprofile=newguess.out
 --- PASS: TestGuessAlreadyGuessed (0.00s)<br/>
 === RUN   TestGuessBadGuess<br/>
 --- PASS: TestGuessBadGuess (0.00s)<br/>
-=== RUN   TestGuessGoodGuess<br/>v
---- PASS: TestGuessGoodGuess (0.00s<br/>)
+=== RUN   TestGuessGoodGuess<br/>
+--- PASS: TestGuessGoodGuess (0.00s)<br/>
 === RUN   TestGuessAndLoseGame<br/>
 --- PASS: TestGuessAndLoseGame (0.00s)<br/>
 === RUN   TestGuessAndWinGame<br/>
