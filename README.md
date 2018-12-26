@@ -44,35 +44,35 @@ We can modify parameters of execution (configuration) by cli parameters (in othe
 
 go test -v server/controller/newguess -coverprofile=newguess.out
 
-=== RUN   TestLetterInWord
---- PASS: TestLetterInWord (0.00s)
-=== RUN   TestNotLetterInWord
---- PASS: TestNotLetterInWord (0.00s)
-=== RUN   TestHasWon
---- PASS: TestHasWon (0.00s)
-=== RUN   TestHasNotWon
---- PASS: TestHasNotWon (0.00s)
-=== RUN   TestGuessWithEmptyGuess
---- PASS: TestGuessWithEmptyGuess (0.00s)
-=== RUN   TestGuessToNonExistentGame
---- PASS: TestGuessToNonExistentGame (0.00s)
-=== RUN   TestGuessToLostGame
---- PASS: TestGuessToLostGame (0.00s)
-=== RUN   TestGuessToWonGame
---- PASS: TestGuessToWonGame (0.00s)
-=== RUN   TestGuessAlreadyGuessed
---- PASS: TestGuessAlreadyGuessed (0.00s)
-=== RUN   TestGuessBadGuess
---- PASS: TestGuessBadGuess (0.00s)
-=== RUN   TestGuessGoodGuess
---- PASS: TestGuessGoodGuess (0.00s)
-=== RUN   TestGuessAndLoseGame
---- PASS: TestGuessAndLoseGame (0.00s)
-=== RUN   TestGuessAndWinGame
---- PASS: TestGuessAndWinGame (0.00s)
-PASS
-coverage: 100.0% of statements
-ok  	server/controller/newguess	0.003s	coverage: 100.0% of statements
+=== RUN   TestLetterInWord<br/>
+--- PASS: TestLetterInWord (0.00s)<br/>
+=== RUN   TestNotLetterInWord<br/>
+--- PASS: TestNotLetterInWord (0.00s)<br/>
+=== RUN   TestHasWon<br/>
+--- PASS: TestHasWon (0.00s)<br/>
+=== RUN   TestHasNotWon<br/>
+--- PASS: TestHasNotWon (0.00s)<br/>
+=== RUN   TestGuessWithEmptyGuess<br/>
+--- PASS: TestGuessWithEmptyGuess (0.00s)<br/>
+=== RUN   TestGuessToNonExistentGame<br/>
+--- PASS: TestGuessToNonExistentGame (0.00s)<br/>
+=== RUN   TestGuessToLostGame<br/>
+--- PASS: TestGuessToLostGame (0.00s)<br/>
+=== RUN   TestGuessToWonGame<br/>
+--- PASS: TestGuessToWonGame (0.00s)<br/>
+=== RUN   TestGuessAlreadyGuessed<br/>
+--- PASS: TestGuessAlreadyGuessed (0.00s)<br/>
+=== RUN   TestGuessBadGuess<br/>
+--- PASS: TestGuessBadGuess (0.00s)<br/>
+=== RUN   TestGuessGoodGuess<br/>v
+--- PASS: TestGuessGoodGuess (0.00s<br/>)
+=== RUN   TestGuessAndLoseGame<br/>
+--- PASS: TestGuessAndLoseGame (0.00s)<br/>
+=== RUN   TestGuessAndWinGame<br/>
+--- PASS: TestGuessAndWinGame (0.00s)<br/>
+PASS<br/>
+coverage: 100.0% of statements<br/>
+ok  	server/controller/newguess	0.003s	coverage: 100.0% of statements<br/>
 
-go tool cover -html=newguess.out -o newguess.html
+go tool cover -html=newguess.out -o newguess.html<br/>
 
