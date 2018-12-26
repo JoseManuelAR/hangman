@@ -8,6 +8,7 @@ import (
 	"client/remote"
 	"config"
 	"data"
+	"log"
 )
 
 type Controller struct {
@@ -22,11 +23,11 @@ func NewController(config config.Config) (Controller, error) {
 	return Controller{remote: remote}, nil
 }
 
-// func (controller Controller) Start(bc chan bool) error {
-// 	log.Println("Starting controller...")
-// 	controller.model.Start(bc)
-// 	return nil
-// }
+func (controller Controller) Start(bc chan bool) error {
+	log.Println("Starting controller...")
+	controller.remote.Start(bc)
+	return nil
+}
 
 func (controller Controller) NewGame() (data.GameInfo, error) {
 	return newgame.NewGame(controller.remote)

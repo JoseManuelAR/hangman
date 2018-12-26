@@ -26,9 +26,13 @@ func (remote remoteRest) Start(bc chan bool) error {
 	return nil
 }
 
+func (remote remoteRest) makeUrl(path string) string {
+	return "http://" + remote.ip + ":" + remote.port + "/hangman/" + path
+}
+
 func (remote remoteRest) NewGame() (data.GameInfo, error) {
 	resp, err := resty.R().SetHeader("Content-Type", "application/json").
-		Post("http://127.0.0.1:8000/hangman/v1/games")
+		Post(remote.makeUrl("v1/games"))
 
 	gameInfo := data.GameInfo{}
 	if err == nil {
@@ -41,7 +45,7 @@ func (remote remoteRest) NewGuess(gameId string, guess string) (data.GameInfo, e
 	resp, err := resty.R().SetHeader("Content-Type", "application/json").
 		SetBody(data.Guess{
 			Guess: guess}).
-		Put("http://127.0.0.1:8000/hangman/v1/games/" + gameId + "/guesses")
+		Put(remote.makeUrl("v1/games/" + gameId + "/guesses"))
 
 	gameInfo := data.GameInfo{}
 	if err == nil {
@@ -52,7 +56,7 @@ func (remote remoteRest) NewGuess(gameId string, guess string) (data.GameInfo, e
 
 func (remote remoteRest) GetGame(gameId string) (data.GameInfo, error) {
 	resp, err := resty.R().SetHeader("Content-Type", "application/json").
-		Get("http://127.0.0.1:8000/hangman/v1/games/" + gameId)
+		Get(remote.makeUrl("v1/games/" + gameId))
 
 	gameInfo := data.GameInfo{}
 	if resp.StatusCode() == http.StatusOK {
@@ -66,7 +70,7 @@ func (remote remoteRest) GetGame(gameId string) (data.GameInfo, error) {
 
 func (remote remoteRest) GetGames() ([]data.GameInfo, error) {
 	resp, err := resty.R().SetHeader("Content-Type", "application/json").
-		Get("http://127.0.0.1:8000/hangman/v1/games")
+		Get(remote.makeUrl("v1/games"))
 
 	games := make([]data.GameInfo, 0)
 	if err == nil {

@@ -8,8 +8,8 @@ import (
 )
 
 type Hangman struct {
-	//controller controller.Controller
-	view view.View
+	controller controller.Controller
+	view       view.View
 }
 
 func NewHangman(config config.Config) Hangman {
@@ -22,14 +22,14 @@ func NewHangman(config config.Config) Hangman {
 		fmt.Println(err)
 	}
 	return Hangman{
-		//controller: controller,
-		view: view}
+		controller: controller,
+		view:       view}
 }
 
 func (hangman Hangman) Start() error {
 	done := make(chan bool)
-	// // go hangman.controller.Start(done)
-	// // <-done
+	go hangman.controller.Start(done)
+	<-done
 	go hangman.view.Start(done)
 	<-done
 	return nil
