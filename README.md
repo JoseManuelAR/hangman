@@ -11,6 +11,12 @@ In both programs I have applied an MVC architecture (model view controller view)
 - Model: I have developed a model in memory (non-persistent) that will save the data of the games in progress. With the same interface a persistent model could be implemented (for example a database)
 The server also has an interface that is responsible for generating the random words for each game. In my case, it reads a list of words from a plain text file and selects one at random for each game.
 
+# Concurrency issues
+Possible concurrency problems could occur in the server with the possibility of multiple clients accessing it simultaneously.
+Faced with this possibility two solutions are proposed:
+- Goroutines: Each incoming request to the server will be treated in a different goroutine, thus avoiding problems. It is achieved through the mux.Router object and the mapping of functions using HandleFunc
+- sync mutex: In the part corresponding to the model, the concurrent access to the data is protected through sync.RWMutex. When accesses are read-only, using RLock / RUnlock and when they are modified or written by Lock / Unlock
+
 # Implementation
 
 Implmented using go version go1.11 linux/amd64
@@ -41,6 +47,13 @@ We can modify parameters of execution (configuration) by cli parameters (in othe
   Words Type (default "file")
 
 # Tests & Coverage
+
+In this exercise we have only created unit tests for the business logic of 'new guess' on the server, but in a real development it would be advisable (even mandatory) to follow TDD, forcing us to write the tests before the code itself.<br/>
+The business logic of the command 'new guess' interacts directly with the interface of the model (to modify the letters guessed in a game), so I had to generate a mock of that interface. This is done by the following line:<br/>
+
+mockgen -source = src / server / model / model.go -destination = src / mocks / mock_model.go -package = mocks<br/>
+
+In this case the unit tests are executed with the following line and we obtain the following output on the screen:<br/>
 
 go test -v server/controller/newguess -coverprofile=newguess.out
 
@@ -73,6 +86,8 @@ go test -v server/controller/newguess -coverprofile=newguess.out
 PASS<br/>
 coverage: 100.0% of statements<br/>
 ok  	server/controller/newguess	0.003s	coverage: 100.0% of statements<br/>
+
+As you can see I have added a code coverage check of our unit tests, that is, the percentage of our actual code that is exercised by our tests. The output of the coverage can be easily checked and analyzed with the following line:<br/>
 
 go tool cover -html=newguess.out -o newguess.html<br/>
 
